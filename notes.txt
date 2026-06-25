@@ -1,0 +1,36 @@
+relationships(in sql via foreign keys)
+
+
+* one to one 1*1
+
+*one to many 1*n
+
+*many to many n*n
+
+express router is a way to organise your express application such that our priary app.js file does not 
+become bloated 
+
+const router =express.Router()
+
+
+
+*cookies
+
+HTTP cookies are small blocks of data created by a
+ web server while a user is browsing a website and placed on the 
+ users computer or other device by the users web browser
+
+
+ *Stateful Protocol 
+ Stateful Protocol require server to save the status and session information
+
+ eg-ftp(file transfer protocol)
+
+ *Stateless Protocol
+ Stateless Protocol does not require the server to retain the 
+ server infromation or 
+
+ eg-http
+
+ *Express Sessions:
+  An attempt to make our session Stateful

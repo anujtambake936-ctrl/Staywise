@@ -1,0 +1,73 @@
+/* General Layout */
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.container {
+    flex: 1;
+}
+
+/* Navbar Styling */
+.navbar {
+    height: 5rem;
+    background-color: white;
+}
+
+.nav-link {
+    color: #222222 !important;
+}
+
+/* Form Styling */
+.add-btn {
+    background-color: #fe424d !important; /* Airbnb-style Coral/Red */
+    border: none !important;
+    width: 120px;
+}
+
+.form-label {
+    font-weight: 600;
+}
+
+/* Listing Cards (For your Index/Home page) */
+.card {
+    border: none !important;
+    margin-bottom: 2rem;
+}
+
+.card-img-top {
+    border-radius: 1rem !important;
+    width: 100% !important;
+    object-fit: cover !important;
+    height: 20rem !important;
+}
+
+.card-body {
+    padding: 0 !important;
+}
+
+.card-text p {
+    font-weight: 400;
+}
+
+/* Hover effect for cards */
+.listing-link {
+    text-decoration: none;
+}
+
+.card-img-overlay {
+    opacity: 0;
+}
+
+.card-img-overlay:hover {
+    opacity: 0.2;
+    background-color: white;
+}
+
+#map{
+    height: 400px;
+    width: 100%;
+    min-width: 320px;
+}
