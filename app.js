@@ -19,7 +19,7 @@ const listingRouter = require("./routes/listing.js");
 const reviewRouter = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
 
-const MONGO_URL = process.env.DB_URL||"mongodb://127.0.0.1:27017/wanderlust";
+const MONGO_URL = process.env.DB_URL||"mongodb://127.0.0.1:27017/staywise";
 
 main()
   .then(()=>{
@@ -74,9 +74,14 @@ app.use((req,res,next)=>{
 
 app.use("/listings",listingRouter)
 app.use("/listings/:id/reviews",reviewRouter)
+
+app.get("/", (req, res) => {
+  res.render("landing");
+});
+
 app.use("/",userRouter);
 
-app.all("/{*splat}", (req,res,next)=>{
+app.all(/.*/, (req,res,next)=>{
     next(new ExpressError(404,"Page Not Found!"));
 });
 

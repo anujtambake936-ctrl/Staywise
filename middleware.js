@@ -31,11 +31,18 @@ module.exports.isOwner=async(req,res,next)=>{
 }
 
 module.exports.validateListing=(req,res,next)=>{
-   let {error}=listingSchema.validate(req.body)
+   const {error}=listingSchema.validate(req.body)
   
    if(error){
-     let errMsg = error.details.map((el) => el.message).join(",");
-      throw new ExpressError(400,error)
+     const errMsg = error.details.map((el) => el.message).join(", ");
+     if(req.method === "POST"){
+       return res.status(400).render("listings/new.ejs", { listing: req.body.listing || {}, error: errMsg });
+     }
+     if(req.method === "PUT"){
+       const listing = { ...(req.body.listing || {}), _id: req.params.id };
+       return res.status(400).render("listings/edit.ejs", { listing, originalImageUrl: req.body.listing?.image?.url || "", error: errMsg });
+     }
+      throw new ExpressError(400, errMsg)
    }else{
       next();
    }

@@ -21,10 +21,13 @@ body {
 }
 
 /* Form Styling */
-.add-btn {
+.add-btn,
+.edit-btn {
     background-color: #fe424d !important; /* Airbnb-style Coral/Red */
     border: none !important;
-    width: 120px;
+    width: auto;
+    min-width: 100px;
+    padding: 0.6rem 1rem;
 }
 
 .form-label {
@@ -67,7 +70,237 @@ body {
 }
 
 #map{
-    height: 400px;
+    height: 40px;
     width: 100%;
     min-width: 320px;
 }
+
+/* Search panel and filter chips moved from index.ejs */
+.search-panel {
+    margin: 1.25rem 0;
+    padding: 0.75rem 0.85rem 0.65rem;
+    background: #ffffff;
+    border: 1px solid #e5e5e5;
+    border-radius: 1rem;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.05);
+}
+.search-panel__row { display:flex; gap:0.45rem; align-items:center; }
+.search-panel__fields { display:flex; gap:0.45rem; flex:1 1 auto; align-items:center; flex-wrap:wrap; }
+.search-panel__fields input,
+.search-panel__fields select {
+    padding:0.55rem 0.75rem;
+    border:1px solid #d1d5db;
+    border-radius:0.75rem;
+    font-size:0.95rem;
+    color:#0f172a;
+    background:#f8fafc;
+    min-height:2.4rem;
+    height:2.4rem;
+}
+.search-panel__fields input[type="text"] { flex: 1.8 1 200px; min-width: 100px; }
+.search-panel__fields select { flex: 1 1 120px; min-width: 100px; }
+.search-panel__fields input[type="number"] { flex: 1 1 100px; min-width: 95px; }
+.search-panel__actions { margin-left: auto; display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap; }
+.search-panel__actions .btn { min-width:0; padding:0.55rem 0.85rem; font-size:0.92rem; }
+.tax-toggle { display:flex; align-items:center; gap:0.4rem; color:#334155; font-size:0.92rem; padding:0.55rem 0.75rem; background:#f8fafc; border-radius:0.75rem; }
+.tax-toggle input{ width:auto; margin:0; }
+.filters-row { display:flex; flex-wrap:wrap; gap:0.65rem; align-items:center; margin-bottom:1rem; }
+.chip-link { display:inline-flex; flex-direction:column; align-items:center; justify-content:center; gap:0.35rem; min-width: 100px; padding:0.7rem 0.75rem; border-radius:0.95rem; background:#ffffff; border:1px solid #eceff1; box-shadow:0 6px 14px rgba(15,23,42,0.04); color:#334155; text-decoration:none; transition: transform .15s ease, border-color .15s ease, background .15s ease; }
+.chip-link:hover, .chip-link:focus-visible { transform:translateY(-1px); border-color:#cbd5e1; background:#f8fafc; }
+.chip-link i { font-size:1.15rem; color:#0f172a; }
+.chip-link p { margin:0; font-size:0.8rem; line-height:1.3; }
+.chip-link.active { border-color: #aac0e8; background: #f1f6ff; transform: translateY(-1px); box-shadow: 0 8px 18px rgba(15,23,42,0.06); }
+.listing-row { margin-top:1rem; }
+.listing-card { height:100%; border-radius:1rem; overflow:hidden; border:1px solid #e2e8f0; transition: transform .18s ease, box-shadow .18s ease; }
+.listing-card:hover { transform:translateY(-4px); box-shadow:0 20px 40px rgba(15,23,42,0.12); }
+.listing-card img { width:100%; height:200px; object-fit:cover; }
+.listing-card-body { padding:0.9rem; min-height:100px; }
+
+/* Landing page styles */
+.landing-hero {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 3rem;
+    align-items: center;
+    margin: 3rem 0;
+}
+.landing-copy {
+    max-width: 560px;
+}
+.eyebrow {
+    display: inline-block;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: #64748b;
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+}
+.landing-copy h1 {
+    font-size: clamp(2.5rem, 3.5vw, 4rem);
+    line-height: 1.05;
+    margin-bottom: 1.25rem;
+}
+.landing-copy p {
+    color: #475569;
+    font-size: 1rem;
+    line-height: 1.8;
+    margin-bottom: 1.8rem;
+}
+.landing-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+.landing-visual img {
+    width: 100%;
+    border-radius: 1.5rem;
+    object-fit: cover;
+    box-shadow: 0 30px 70px rgba(15,23,42,0.12);
+}
+.landing-features {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+.feature-card {
+    background: #ffffff;
+    border-radius: 1.25rem;
+    padding: 1.75rem;
+    box-shadow: 0 16px 40px rgba(15,23,42,0.08);
+    text-align: center;
+}
+.feature-card i {
+    font-size: 2rem;
+    color: #2563eb;
+    margin-bottom: 1rem;
+}
+.feature-card h3 {
+    margin-bottom: 0.75rem;
+    font-size: 1.15rem;
+}
+.feature-card p {
+    color: #64748b;
+    font-size: 0.95rem;
+    line-height: 1.7;
+}
+
+/* Compact form inputs for new/edit listing pages */
+.col-8 .form-control, .col-8 .form-select { padding:0.6rem 0.8rem; border-radius:0.5rem; font-size:0.95rem; }
+
+@media (max-width: 900px) {
+    .landing-hero {
+        grid-template-columns: 1fr;
+    }
+    .landing-visual {
+        order: -1;
+    }
+    .landing-features {
+        grid-template-columns: 1fr;
+    }
+}
+@media (max-width: 940px) {
+    /* More compact mobile: remove extra shadows/borders, make chips row-aligned, shrink paddings */
+    .search-panel {
+        margin: 0.12rem 0;
+        padding: 0.12rem 0.18rem 0.14rem;
+        border-radius: 0.25rem;
+        box-shadow: none;
+        border: none;
+        background: transparent;
+    }
+    .search-panel__row,
+    .search-panel__fields,
+    .search-panel__actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.08rem;
+    }
+    /* arrange search then a single row for category/min/max */
+    .search-panel__fields { gap:0.08rem; display:grid; grid-template-columns: 1fr repeat(3, minmax(56px, 1fr)); grid-auto-rows: auto; align-items:center; }
+    .search-panel__fields input,
+    .search-panel__fields select {
+        width: 100%;
+        min-width: 0;
+        padding: 0.12rem 0.28rem;
+        border-radius: 0.28rem;
+        font-size: 0.86rem;
+        line-height: 1.05;
+        height: auto;
+        min-height: 1.6rem;
+        box-sizing: border-box;
+    }
+    .search-panel__fields input[type="text"] { grid-column: 1 / -1; }
+    .search-panel__actions {
+        margin-left: 0;
+        gap: 0.08rem;
+    }
+    /* unify control heights */
+    .search-panel { --sp-control-h: 2.2rem; }
+    .search-panel__actions .btn {
+        width: 100%;
+        align-self: stretch;
+        padding: 0 .54rem;
+        min-width: 0;
+        font-size: 0.5rem;
+        border-radius: 0.28rem;
+        height: var(--sp-control-h);
+        display:inline-flex; align-items:center; justify-content:center;
+    }
+    .search-panel__fields select,
+    .search-panel__fields input[type="number"] {
+        height: var(--sp-control-h);
+        padding: 0 .5rem;
+        display:inline-flex; align-items:center;
+    }
+    .tax-toggle {
+        justify-content: flex-start;
+        width:100%;
+        padding: 0.18rem 0.28rem;
+        background: transparent;
+        border-radius: 0.28rem;
+    }
+    .filters-row { gap:0.08rem; margin-bottom:0.18rem; }
+    .chip-link {
+        display:inline-flex;
+        flex-direction:row;
+        align-items:center;
+        justify-content:center;
+        gap:0.12rem;
+        min-width:58px;
+        padding:0.42rem 0.28rem;
+        border-radius:0.28rem;
+        font-size:0.66rem;
+        box-shadow:none;
+        border:1px solid rgba(0,0,0,0.04);
+        background:transparent;
+    }
+    .chip-link p { font-size:0.78rem; margin:0; }
+}
+
+    /* When mobile nav (hamburger) is open, make panels non-transparent */
+    @media (max-width: 940px) {
+        /* Make the navbar collapse itself opaque and sit above content so it doesn't show underlying panels */
+        .navbar-collapse {
+            background-color: #ffffff;
+        }
+        .navbar-collapse.show {
+            position: relative;
+            z-index: 1090;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+            border-bottom: 1px solid #e5e5e5;
+        }
+        /* Keep search-panel styling stable (no forced positioning) when nav is open */
+        body.nav-open .search-panel {
+            background-color: #ffffff !important;
+            border: 1px solid #e5e5e5 !important;
+            box-shadow: none !important;
+            padding: 0.35rem 0.4rem !important;
+            border-radius: 0.45rem !important;
+            position: static !important;
+            z-index: auto !important;
+        }
+        body.nav-open .chip-link { background-color:#ffffff !important; border:1px solid #eceff1 !important; box-shadow:none !important; }
+        body.nav-open .tax-toggle { background-color:#f8fafc !important; }
+    }
+

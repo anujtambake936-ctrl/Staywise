@@ -1,19 +1,22 @@
 <% layout("/layouts/boilerplate")%>
+<% var listing = typeof listing !== 'undefined' ? listing : {}; %>
 
 <div class="row mt-3" >
     <div class="col-8 offset-2">
         <br /> <br />
         <h3>Create a New Listing</h3>
-        
+        <% if (typeof error !== 'undefined') { %>
+          <div class="alert alert-danger"><%= error %></div>
+        <% } %>
         <form method="POST" action="/listings" class="needs-validation" novalidate enctype="multipart/form-data">
     <div class="mb-3">
         <label for="title" class="form-label"> Title </label> 
-        <input class="form-control" type="text" name="listing[title]" placeholder="enter title" required/>
+        <input class="form-control" type="text" name="listing[title]" placeholder="enter title" value="<%= listing && listing.title ? listing.title : '' %>" required/>
         <div class="valid-feedback">Title looks good!</div>
       </div>
     <div class="mb-3">
       <label for="description" class="form-label"> Description</label> 
-      <textarea name="listing[description]" placeholder="enter description" class="form-control"required></textarea>
+      <textarea name="listing[description]" placeholder="enter description" class="form-control" required><%= listing && listing.description ? listing.description : '' %></textarea>
       <div class="valid-feedback">Add a short description</div>
     </div>
     
@@ -24,6 +27,7 @@
        type="text" 
        name="listing[image][url]" 
        placeholder="enter image url/link"
+       value="<%= listing && listing.image && listing.image.url ? listing.image.url : '' %>"
        />
    </div>
    <div class="mb-3">
@@ -38,32 +42,43 @@
    <div class="row">
      <div class="mb-3 col-md-4">
        <label for="price" class="form-label">Price</label>
-       <input class="form-control" type="text" name="listing[price]" placeholder="enter price" required/>
-        <div class="invalid-feedback">Add a valid price!</div>
-      </div>
-     <div class="mb-3 col-md-8">
-         <label for="country" class="form-label">country</label>
-         <input 
-          class="form-control"
-          type="text" 
-          name="listing[country]" 
-          placeholder="enter location"
-          required>
-          <div class="invalid-feedback">Country should be valid!</div>
+       <input class="form-control" type="text" name="listing[price]" placeholder="enter price" value="<%= listing && listing.price ? listing.price : '' %>" required/>
+       <div class="invalid-feedback">Add a valid price!</div>
+     </div>
+     <div class="mb-3 col-md-4">
+       <label for="category" class="form-label">Category</label>
+       <select class="form-select" name="listing[category]" required>
+         <option value="Apartment" <%= listing && listing.category === 'Apartment' ? 'selected' : '' %>>Apartment</option>
+         <option value="Villa" <%= listing && listing.category === 'Villa' ? 'selected' : '' %>>Villa</option>
+         <option value="Cottage" <%= listing && listing.category === 'Cottage' ? 'selected' : '' %>>Cottage</option>
+         <option value="Beach House" <%= listing && listing.category === 'Beach House' ? 'selected' : '' %>>Beach House</option>
+         <option value="Cabin" <%= listing && listing.category === 'Cabin' ? 'selected' : '' %>>Cabin</option>
+       </select>
+     </div>
+     <div class="mb-3 col-md-4">
+       <label for="country" class="form-label">Country</label>
+       <input 
+         class="form-control"
+         type="text" 
+         name="listing[country]" 
+         placeholder="enter country"
+         value="<%= listing && listing.country ? listing.country : '' %>"
+         required>
+       <div class="invalid-feedback">Country should be valid!</div>
      </div>
    </div>
-  
-     <div class="mb-3">
-        <label for="location" class="form-label">Location</label>
-        <input 
-           class="form-control"
-           type="text" 
-           name="listing[location]" 
-           placeholder="enter location"
-           required
-           />
-           <div class="invalid-feedback">Add a valid location!</div>
-     </div>
+   <div class="mb-3">
+     <label for="location" class="form-label">City / Location</label>
+     <input 
+       class="form-control"
+       type="text" 
+       name="listing[location]" 
+       placeholder="enter city or address"
+       value="<%= listing && listing.location ? listing.location : '' %>"
+       required
+     />
+     <div class="invalid-feedback">Add a valid location!</div>
+   </div>
     <button class="btn btn-dark add-btn mt-3">Add</button>
     <br /> <br />
     </form>

@@ -15,6 +15,15 @@ const listingSchema = new mongoose.Schema({
   price: Number,
   location: String,
   country: String,
+  category: {
+    type: String,
+    enum: ["Apartment","Villa","Cottage","Beach House","Cabin"],
+    default: "Apartment"
+  },
+  views: {
+    type: Number,
+    default: 0
+  },
   reviews:[
     {
       type:Schema.Types.ObjectId,
@@ -36,7 +45,7 @@ const listingSchema = new mongoose.Schema({
       required: true,
     }, // This comma and the brace below were missing/misplaced
   },
-});
+}, { timestamps: true });
 
 listingSchema.post("findOneAndDelete",async(listing)=>{
   if(listing){

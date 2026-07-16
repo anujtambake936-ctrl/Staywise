@@ -7,6 +7,7 @@ module.exports.listingSchema=Joi.object({
        location:Joi.string().required(),
        description:Joi.string().required(),
        price:Joi.number().required().min(0),
+       category:Joi.string().valid("Apartment","Villa","Cottage","Beach House","Cabin").required(),
       // If the image is now an object (e.g., { url: string, filename: string }):
        image: Joi.object({
             url: Joi.string().allow("",null),

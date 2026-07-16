@@ -2,7 +2,7 @@ const mongoose=require("mongoose");
 const initData=require("./data.js");
 const Listing=require("../models/listing.js");
 
-const MONGO_URL= process.env.DB_URL||"mongodb://127.0.0.1:27017/wanderlust";
+const MONGO_URL= process.env.DB_URL||"mongodb://127.0.0.1:27017/staywise";
 
 main()
  .then(()=>{
@@ -21,8 +21,14 @@ main()
 
 const initDB= async () => {
     await Listing.deleteMany({});
-   initData.data = initData.data.map((obj)=>({...obj,Owner:'69da967d243a95f74ccc6e54'}));
-    console.log(initData.data[0]);
+   initData.data = initData.data.map((obj)=>({...obj,
+      Owner:'6a586c666e8378f0c9851bf9',
+      geometry: {
+      type: "Point",
+      coordinates: [72.8777, 19.0760] // Default dummy coordinates
+    }
+  }));
+    
    await Listing.insertMany(initData.data);
     console.log("data was initialised");
  };

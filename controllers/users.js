@@ -15,7 +15,7 @@ module.exports.signup=(async (req, res) => {
             }
             
         })
-        req.flash("success", "Welcome to Wanderlust!");
+        req.flash("success", "Welcome to Staywise!");
             res.redirect("/listings");
 
         } catch (e) {
@@ -27,7 +27,7 @@ module.exports.renderlogIn=async(req,res)=>{
   res.render("users/login.ejs");
 };
 module.exports.logIn=async(req,res)=>{
-          req.flash("success","welcome to wanderlust:You are logged in!");
+          req.flash("success","Welcome to Staywise: You are logged in!");
           let redirectUrl=res.locals.redirectUrl||"/listings";
           res.redirect(redirectUrl);
 };
