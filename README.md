@@ -67,13 +67,9 @@ node classroom/server.js
 - `cloudConfig.js` — Cloudinary setup
 - `.env.example` — environment variable template
 
-## Git / Deployment Notes
-
-- Make sure `.env` remains untracked
-- Commit `.env.example` so collaborators know required settings
-- Recommended branch name: `main`
 
 ## License
 
-This project is provided as-is. Add your own license information if needed.
+This project is provided as-is.
+
 
