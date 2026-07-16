@@ -70,9 +70,10 @@ body {
 }
 
 #map{
-    height: 40px;
+    height: 260px;
     width: 100%;
-    min-width: 320px;
+    min-width: 0;
+    max-width: 100%;
 }
 
 /* Search panel and filter chips moved from index.ejs */
