@@ -1,0 +1,26 @@
+<% layout('/layouts/boilerplate') %>
+<div class="container mt-4">
+  <h1>Host Dashboard</h1>
+  <p>Welcome, <%= currUser.fullName %>. Here are your listings.</p>
+  <% if (listingsWithCounts.length === 0) { %>
+    <div class="alert alert-info">You have not added any listings yet.</div>
+  <% } else { %>
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+      <% listingsWithCounts.forEach(item => { const listing = item.listing; %>
+        <div class="col">
+          <div class="card h-100">
+            <img src="<%= listing.image.url %>" class="card-img-top" alt="<%= listing.title %>">
+            <div class="card-body">
+              <h5 class="card-title"><%= listing.title %></h5>
+              <p class="card-text"><%= listing.location %>, <%= listing.country %></p>
+              <p class="card-text"><strong>Price:</strong> ₹<%= listing.price %></p>
+              <p class="card-text"><strong>Bookings:</strong> <%= item.bookingCount %></p>
+              <a href="/listings/<%= listing._id %>" class="btn btn-primary">View</a>
+              <a href="/listings/<%= listing._id %>/bookings" class="btn btn-outline-secondary ms-2">View bookings</a>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+</div>

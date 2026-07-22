@@ -13,7 +13,12 @@
 
       <div class="navbar-nav ms-auto">
         <% if(currUser) { %>
-          <a class="nav-link" href="/listings/new">Add new Listings</a>
+          <% if(currUser.role === 'host') { %>
+            <a class="nav-link" href="/listings/dashboard">Host Dashboard</a>
+            <a class="nav-link" href="/listings/new">Add new Listings</a>
+          <% } else { %>
+            <a class="nav-link" href="/payments/history">My Bookings</a>
+          <% } %>
           <a class="nav-link" href="/logout">Logout</a>
         <% } else { %>
           <a class="nav-link active" href="/signup"><b>Sign up</b></a>

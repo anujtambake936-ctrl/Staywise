@@ -1,0 +1,26 @@
+<% layout('/layouts/boilerplate') %>
+<div class="container mt-5">
+  <div class="alert alert-success">
+    <h4>Payment successful!</h4>
+    <p>Your booking is confirmed.</p>
+    <% if (payment.checkIn && payment.checkOut) { %>
+      <p>
+        <strong>Check-in:</strong> <%= new Date(payment.checkIn).toLocaleDateString('en-IN', { dateStyle: 'long' }) %>
+        &nbsp;→&nbsp;
+        <strong>Check-out:</strong> <%= new Date(payment.checkOut).toLocaleDateString('en-IN', { dateStyle: 'long' }) %>
+      </p>
+      <% if (payment.nights) { %>
+        <% const subtotal = Math.round(payment.amount / 100 / 1.18); %>
+        <% const gst = payment.amount / 100 - subtotal; %>
+        <p><strong>Duration:</strong> <%= payment.nights %> night<%= payment.nights > 1 ? 's' : '' %></p>
+        <p>
+          ₹<%= subtotal.toLocaleString('en-IN') %> + ₹<%= Math.round(gst).toLocaleString('en-IN') %> (18% GST)
+          = <strong>₹<%= (payment.amount / 100).toLocaleString('en-IN') %></strong>
+        </p>
+      <% } %>
+    <% } %>
+    <p><strong>Amount paid:</strong> ₹<%= (payment.amount / 100).toLocaleString('en-IN') %></p>
+    <a href="/payments/history" class="btn btn-primary">View my bookings</a>
+    <a href="/listings" class="btn btn-outline-secondary ms-2">Back to listings</a>
+  </div>
+</div>

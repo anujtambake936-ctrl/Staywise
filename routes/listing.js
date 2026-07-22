@@ -2,21 +2,25 @@ const express=require("express");
 const router=express.Router({ mergeParams: true });
 const wrapAsync=require("../utils/wrapAsync.js");
 const Listing=require("../models/listing.js");
-const {isLoggedIn,isOwner,validateListing}=require("../middleware.js")
+const {isLoggedIn,isOwner,isHost,validateListing}=require("../middleware.js")
 const listingController=require("../controllers/listings.js");
 const multer  = require('multer')
 const {storage}=require("../cloudConfig.js");
 const upload = multer({ storage })
 
 
+// Host dashboard route
+router.get('/dashboard', isHost, wrapAsync(listingController.renderHostDashboard));
+router.get('/:id/bookings', isHost, wrapAsync(listingController.renderListingBookings));
+
 //New route
-router.get("/new",isLoggedIn,listingController.renderNewForm);
+router.get("/new",isHost,listingController.renderNewForm);
 
 router
    .route("/")
    .get(wrapAsync(listingController.index))
    .post(
-   isLoggedIn,
+   isHost,
    upload.single("listing[image]"),
    validateListing,
    wrapAsync(listingController.createListing)

@@ -74,21 +74,14 @@
         <div class="card listing-card" data-price="<%= listing.price %>">
           <img src="<%= listing.image.url %>" class="card-img-top" alt="listing_image">
           <div class="card-body listing-card-body">
-            <p class="card-text mb-2">
-              <strong><%= listing.title %></strong>
-            </p>
+            <p class="card-text mb-2"><strong><%= listing.title %></strong></p>
             <p class="mb-2 text-muted" style="font-size:0.95rem;"><%= listing.location %>, <%= listing.country %></p>
-            <% const gst = Math.round(listing.price * 0.18); const total = listing.price + gst; %>
             <p class="mb-0 price-display">
               <strong>&#8377; <%= listing.price.toLocaleString("en-IN") %></strong> / night
             </p>
-           
           </div>
         </div>
       </a>
     </div>
   <% } %>
 </div>
-</body>
-</html>
-

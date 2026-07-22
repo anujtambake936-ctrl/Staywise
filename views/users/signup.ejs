@@ -17,6 +17,63 @@
             </div>
 
             <div class="mb-3">
+                <label for="fullName" class="form-label">Full Name</label>
+                <input 
+                    name="fullName" 
+                    id="fullName" 
+                    type="text" 
+                    class="form-control" 
+                    required
+                />
+                <div class="invalid-feedback">Please enter your full name.</div>
+            </div>
+
+            <div class="mb-3">
+                <label for="phone" class="form-label">Phone</label>
+                <input 
+                    name="phone" 
+                    id="phone" 
+                    type="text" 
+                    class="form-control" 
+                    required
+                />
+                <div class="invalid-feedback">Please enter your phone number.</div>
+            </div>
+
+            <div class="mb-3">
+                <label for="address" class="form-label">Address</label>
+                <input 
+                    name="address" 
+                    id="address" 
+                    type="text" 
+                    class="form-control" 
+                />
+            </div>
+
+            <div class="mb-3">
+                <label for="role" class="form-label">I am signing up as</label>
+                <select name="role" id="role" class="form-select" required>
+                  <option value="user">User</option>
+                  <option value="host">Host</option>
+                </select>
+            </div>
+
+            <div id="hostFields" style="display:none;">
+              <div class="mb-3">
+                <label for="companyName" class="form-label">Company Name</label>
+                <input name="hostInfo[companyName]" id="companyName" type="text" class="form-control" />
+              </div>
+              <div class="mb-3">
+                <label for="bio" class="form-label">Short Bio</label>
+                <textarea name="hostInfo[bio]" id="bio" class="form-control" rows="3"></textarea>
+              </div>
+              <div class="mb-3">
+                <label for="gstNumber" class="form-label">GST Number</label>
+                <input name="hostInfo[gstNumber]" id="gstNumber" type="text" class="form-control" />
+              </div>
+            </div>
+
+            <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
                 <input 
                     name="email" 
@@ -44,3 +101,9 @@
         </form>
     </div>
 </div>
+
+<script>
+  document.getElementById('role').addEventListener('change', function () {
+    document.getElementById('hostFields').style.display = this.value === 'host' ? 'block' : 'none';
+  });
+</script>

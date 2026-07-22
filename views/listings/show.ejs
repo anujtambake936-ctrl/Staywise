@@ -94,4 +94,185 @@
          <div id="map" data-map-token="<%= process.env.MAP_TOKEN %>" data-coordinates='<%- JSON.stringify(listing.geometry.coordinates) %>' data-location="<%= listing.location %>"></div>
     </div>
 </div>
+<!-- Flatpickr -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<div class="col-12 col-md-6 offset-md-3 mt-4 mb-4">
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h5 class="card-title mb-3">Book this listing</h5>
+
+      <% if (currUser) { %>
+        <% if (!currUser._id.equals(listing.Owner._id)) { %>
+          <!-- Date picker -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Select dates</label>
+            <input type="text" id="date-range-picker" class="form-control" placeholder="Check-in  →  Check-out" readonly />
+            <input type="hidden" id="checkIn" />
+            <input type="hidden" id="checkOut" />
+          </div>
+
+          <!-- Dynamic price summary -->
+          <div id="price-summary" class="mb-3 text-muted" style="display:none;">
+            <span id="nights-label"></span> ×
+            &#8377;<span id="price-per-night"><%= listing.price.toLocaleString("en-IN") %></span> / night
+            <br />
+            <strong>Total: &#8377;<span id="total-price"></span></strong>
+            <small class="d-block text-secondary">+ &#8377;<span id="gst-price"></span> (18% GST) = &#8377;<span id="grand-total"></span></small>
+          </div>
+
+          <div id="booking-error" class="alert alert-danger d-none"></div>
+
+          <button id="checkout-button" class="btn btn-primary w-100" disabled>
+            Select dates to book
+          </button>
+        <% } else { %>
+          <p class="text-muted mb-0">You own this listing.</p>
+        <% } %>
+      <% } else { %>
+        <a href="/login" class="btn btn-secondary w-100">Login to book</a>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+(function () {
+  const pricePerNight = <%= listing.price %>;
+  const listingId     = '<%= listing._id %>';
+  const publishableKey = '<%= process.env.STRIPE_PUBLISHABLE_KEY %>';
+  const stripe = publishableKey ? Stripe(publishableKey) : null;
+
+  const checkoutBtn  = document.getElementById('checkout-button');
+  const priceSummary = document.getElementById('price-summary');
+  const bookingError = document.getElementById('booking-error');
+  const checkInEl    = document.getElementById('checkIn');
+  const checkOutEl   = document.getElementById('checkOut');
+
+  if (!checkoutBtn) return; // not logged in or owner — nothing to do
+
+  // ── 1. Fetch booked ranges and initialise Flatpickr ───────────────────────
+  fetch(`/payments/booked-dates/${listingId}`)
+    .then(r => r.json())
+    .then(bookings => {
+      // Build list of individual disabled dates from booked ranges
+      const disabledRanges = bookings
+        .filter(b => b.checkIn && b.checkOut)
+        .map(b => ({ from: b.checkIn.slice(0, 10), to: new Date(new Date(b.checkOut) - 86400000).toISOString().slice(0, 10) }));
+
+      flatpickr('#date-range-picker', {
+        mode: 'range',
+        minDate: 'today',
+        dateFormat: 'Y-m-d',
+        disable: disabledRanges,
+        onClose(selectedDates) {
+          if (selectedDates.length === 2) {
+            const ci = selectedDates[0].toISOString().slice(0, 10);
+            const co = selectedDates[1].toISOString().slice(0, 10);
+            checkInEl.value  = ci;
+            checkOutEl.value = co;
+            updatePriceSummary(selectedDates[0], selectedDates[1]);
+            setBookingError('');
+            checkoutBtn.disabled = false;
+            checkoutBtn.textContent = 'Book now';
+          } else {
+            checkoutBtn.disabled = true;
+            checkoutBtn.textContent = 'Select dates to book';
+            priceSummary.style.display = 'none';
+          }
+        }
+      });
+    })
+    .catch(() => {
+      // fallback — init without disabled ranges
+      flatpickr('#date-range-picker', {
+        mode: 'range',
+        minDate: 'today',
+        dateFormat: 'Y-m-d',
+        onClose(selectedDates) {
+          if (selectedDates.length === 2) {
+            checkInEl.value  = selectedDates[0].toISOString().slice(0, 10);
+            checkOutEl.value = selectedDates[1].toISOString().slice(0, 10);
+            updatePriceSummary(selectedDates[0], selectedDates[1]);
+            checkoutBtn.disabled = false;
+            checkoutBtn.textContent = 'Book now';
+          }
+        }
+      });
+    });
+
+  // ── 2. Dynamic price display ───────────────────────────────────────────────
+  function updatePriceSummary(ci, co) {
+    const nights   = Math.round((co - ci) / 86400000);
+    const subtotal = pricePerNight * nights;
+    const gst      = Math.round(subtotal * 0.18);
+    const grand    = subtotal + gst;
+    document.getElementById('nights-label').textContent = `${nights} night${nights > 1 ? 's' : ''}`;
+    document.getElementById('total-price').textContent  = subtotal.toLocaleString('en-IN');
+    document.getElementById('gst-price').textContent    = gst.toLocaleString('en-IN');
+    document.getElementById('grand-total').textContent  = grand.toLocaleString('en-IN');
+    priceSummary.style.display = 'block';
+  }
+
+  function setBookingError(msg) {
+    if (msg) {
+      bookingError.textContent = msg;
+      bookingError.classList.remove('d-none');
+    } else {
+      bookingError.classList.add('d-none');
+    }
+  }
+
+  // ── 3. Checkout ────────────────────────────────────────────────────────────
+  checkoutBtn.addEventListener('click', async () => {
+    const checkIn  = checkInEl.value;
+    const checkOut = checkOutEl.value;
+
+    if (!checkIn || !checkOut) {
+      setBookingError('Please select your check-in and check-out dates first.');
+      return;
+    }
+    if (!stripe) {
+      setBookingError('Payment system is unavailable. Please try again later.');
+      return;
+    }
+
+    checkoutBtn.disabled = true;
+    checkoutBtn.textContent = 'Redirecting…';
+    setBookingError('');
+
+    try {
+      const response = await fetch(`/payments/create-session/${listingId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({ checkIn, checkOut }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setBookingError(data.error || 'Unable to create checkout session.');
+        checkoutBtn.disabled = false;
+        checkoutBtn.textContent = 'Book now';
+        return;
+      }
+
+      const result = await stripe.redirectToCheckout({ sessionId: data.id });
+      if (result.error) {
+        setBookingError(result.error.message);
+        checkoutBtn.disabled = false;
+        checkoutBtn.textContent = 'Book now';
+      }
+    } catch (err) {
+      console.error('Checkout error:', err);
+      setBookingError('Payment checkout failed. Please try again.');
+      checkoutBtn.disabled = false;
+      checkoutBtn.textContent = 'Book now';
+    }
+  });
+})();
+</script>
 <script src="/js/map.js"></script>

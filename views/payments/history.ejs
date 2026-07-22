@@ -1,0 +1,36 @@
+<% layout('/layouts/boilerplate') %>
+<div class="container mt-4">
+  <h1>My Bookings</h1>
+  <% if (bookings.length === 0) { %>
+    <div class="alert alert-info">You have no confirmed bookings yet.</div>
+  <% } else { %>
+    <div class="row row-cols-1 g-4">
+      <% bookings.forEach(booking => { %>
+        <div class="col">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title"><%= booking.listing?.title || 'Listing removed' %></h5>
+              <p class="card-text"><strong>Location:</strong> <%= booking.listing?.location || 'N/A' %>, <%= booking.listing?.country || 'N/A' %></p>
+              <% if (booking.checkIn && booking.checkOut) { %>
+                <p class="card-text">
+                  <strong>Check-in:</strong> <%= new Date(booking.checkIn).toLocaleDateString('en-IN', { dateStyle: 'medium' }) %>
+                  &nbsp;→&nbsp;
+                  <strong>Check-out:</strong> <%= new Date(booking.checkOut).toLocaleDateString('en-IN', { dateStyle: 'medium' }) %>
+                </p>
+                <% if (booking.nights) { %>
+                  <p class="card-text"><strong>Duration:</strong> <%= booking.nights %> night<%= booking.nights > 1 ? 's' : '' %></p>
+                <% } %>
+              <% } %>
+              <p class="card-text"><strong>Booked on:</strong> <%= booking.createdAt.toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }) %></p>
+              <p class="card-text"><strong>Amount:</strong> ₹<%= (booking.amount / 100).toFixed(2) %></p>
+              <p class="card-text"><strong>Status:</strong> <span class="badge bg-success"><%= booking.status %></span></p>
+              <% if (booking.listing) { %>
+                <a href="/listings/<%= booking.listing._id %>" class="btn btn-primary">View listing</a>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+</div>
