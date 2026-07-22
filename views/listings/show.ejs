@@ -140,7 +140,7 @@
 <script src="https://js.stripe.com/v3/"></script>
 <script>
 (function () {
-  const pricePerNight = <%= listing.price %>;
+  const pricePerNight =" <%= listing.price %>";
   const listingId     = '<%= listing._id %>';
   const publishableKey = '<%= process.env.STRIPE_PUBLISHABLE_KEY %>';
   const stripe = publishableKey ? Stripe(publishableKey) : null;

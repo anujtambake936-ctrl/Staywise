@@ -1,3 +1,7 @@
+// MUST BE AT THE VERY TOP OF APP.JS
+const dns = require("node:dns");
+dns.setServers(["1.1.1.1", "8.8.8.8"]); // Overrides local system DNS for Node.js
+
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
 }
@@ -21,7 +25,7 @@ const userRouter    = require('./routes/user.js');
 const paymentRouter = require('./routes/payments.js');
 const chatRouter    = require('./routes/chat.js');
 
-const MONGO_URL = process.env.DB_URL || 'mongodb://127.0.0.1:27017/staywise';
+const MONGO_URL = process.env.DB_URL ||"mongodb://127.0.0.1:27017/staywise";
 
 mongoose.connect(MONGO_URL)
   .then(() => console.log('Connected to DB'))
