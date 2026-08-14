@@ -9,33 +9,35 @@
 <div class="search-panel">
   <form action="/listings" method="GET" id="searchForm">
     <div class="search-panel__row">
-      <div class="search-panel__fields">
-        <div class="search-panel__search-wrap">
-          <i class="fa-solid fa-magnifying-glass search-panel__search-icon"></i>
-          <input type="text" name="search" class="search-panel__search-input"
-            placeholder="Search by title, location or country"
-            value="<%= typeof search !== 'undefined' ? search : '' %>">
-        </div>
+      <!-- Search input — full width on mobile -->
+      <div class="search-panel__search-wrap">
+        <i class="fa-solid fa-magnifying-glass search-panel__search-icon"></i>
+        <input type="text" name="search" class="search-panel__search-input"
+          placeholder="Search listings…"
+          value="<%= typeof search !== 'undefined' ? search : '' %>">
+      </div>
+
+      <!-- Category + actions row -->
+      <div class="search-panel__bottom">
         <select name="category" class="search-panel__select">
-          <option value="All"         <%= selectedCategory === 'All'         ? 'selected' : '' %>>All categories</option>
+          <option value="All"         <%= selectedCategory === 'All'         ? 'selected' : '' %>>All</option>
           <option value="Apartment"   <%= selectedCategory === 'Apartment'   ? 'selected' : '' %>>Apartment</option>
           <option value="Villa"       <%= selectedCategory === 'Villa'       ? 'selected' : '' %>>Villa</option>
           <option value="Cottage"     <%= selectedCategory === 'Cottage'     ? 'selected' : '' %>>Cottage</option>
           <option value="Beach House" <%= selectedCategory === 'Beach House' ? 'selected' : '' %>>Beach House</option>
           <option value="Cabin"       <%= selectedCategory === 'Cabin'       ? 'selected' : '' %>>Cabin</option>
         </select>
-      </div>
 
-      <div class="search-panel__actions">
         <label class="tax-toggle">
           <input type="checkbox" id="gstToggle">
-          <span>With GST</span>
+          <span>GST</span>
         </label>
 
         <!-- Filter dropdown -->
         <div class="filter-dropdown">
           <button type="button" class="btn btn-dark search-panel__submit" id="filterBtn">
-            <i class="fa-solid fa-sliders"></i> Filter
+            <i class="fa-solid fa-sliders"></i>
+            <span class="filter-btn-text"> Filter</span>
             <% if (selectedSort || selectedMinPrice || selectedMaxPrice) { %>
               <span class="filter-active-dot"></span>
             <% } %>
@@ -109,10 +111,14 @@
           </div>
         </div>
 
-        <button type="submit" class="btn btn-outline-secondary search-panel__clear">Search</button>
+        <button type="submit" class="btn btn-outline-dark search-panel__submit">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
 
         <% if (search || selectedCategory !== 'All' || selectedMinPrice || selectedMaxPrice || selectedSort) { %>
-          <a href="/listings" class="btn btn-outline-secondary search-panel__clear">Clear</a>
+          <a href="/listings" class="btn btn-outline-secondary search-panel__clear" title="Clear filters">
+            <i class="fa-solid fa-xmark"></i>
+          </a>
         <% } %>
       </div>
     </div>

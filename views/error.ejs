@@ -1,7 +1,10 @@
 <% layout("/layouts/boilerplate") %>
 
-<div class="row">
-    <div class="alert alert-danger col-6 offset-3" role="alert">
-      <p class="alert-heading"><%= message %></p>
-    </div>
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="error-icon"><i class="fa-solid fa-circle-exclamation"></i></div>
+    <h1 class="auth-card__title">Something went wrong</h1>
+    <p class="auth-card__sub"><%= message %></p>
+    <a href="/listings" class="btn btn-dark w-100 mt-2">Back to listings</a>
+  </div>
 </div>

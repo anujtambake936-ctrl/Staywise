@@ -1,149 +1,187 @@
 <% layout("/layouts/boilerplate")%>
-<div class="row mt-3">
-   <div class="col-8 offset-1">
-    <h3 class="offset-3"><%= listing.title%> </h3>
-</div>
-      <div class="card col-6 offset-3 show-card">
-        <img src="<%=listing.image.url  %>" class="card-img-top show-img" alt="listing_image">
-        <div class="card-body">
-          <p class="card-text">Owned by <i><%= listing.Owner.username %></i></p>
-          <p class="card-text">
-            <%=listing.description%> <br />
 
-            <% const gst = Math.round(listing.price * 0.18); const total = listing.price + gst; %>
-            &#8377; <%= listing.price.toLocaleString("en-IN") %> <br />
-            <small class="text-secondary">+ &#8377; <%= gst.toLocaleString("en-IN") %> (18% GST)</small>
-            <p class="mt-2"><strong>Total: &#8377; <%= total.toLocaleString("en-IN") %></strong></p>
-            <%=listing.location%> <br />
-            <%=listing.country%>
-
-       </div>
-    </div>
-       
-    <br />
-      <% if(currUser && listing.Owner._id.equals(currUser._id)) { %>
-      <div class="d-flex align-items-center ">
-        <a href="/listings/<%=listing._id %>/edit" class="btn btn-dark col-1 offset-3">Edit</a>
-
-        <form method="POST" action="/listings/<%=listing._id%>?_method=DELETE">
-          <button class="btn btn-danger  offset-4">Delete</button>
-        </form >
-      </div>
-      <% } %>
-
-    <% if(currUser){ %>
-    <div class="col-8 offset-3 mb-3">
-    <hr />
-      <h4>Write a review</h4>
-      <form action="/listings/<%= listing.id %>/reviews" method="POST" novalidate class="needs-validation">
-       
-        <div class="mb-3 mt-3">
-           <label for="rating" class="form-label">Rating</label>
-           <fieldset class="starability-slot">
-          <!-- <input type="range" min="1" max="5" id="rating" name="review[rating]" class="form-range" > -->
-           <input type="radio" id="no-rate" class="input-no-rate" name="review[rating]" value="1" checked aria-label="No rating." />
-           <input type="radio" id="first-rate1" name="review[rating]" value="1" />
-           <label for="first-rate1" title="Terrible">1 star</label>
-           <input type="radio" id="first-rate2" name="review[rating]" value="2" />
-           <label for="first-rate2" title="Not good">2 stars</label>
-           <input type="radio" id="first-rate3" name="review[rating]" value="3" />
-           <label for="first-rate3" title="Average">3 stars</label>
-           <input type="radio" id="first-rate4" name="review[rating]" value="4" />
-           <label for="first-rate4" title="Very good">4 stars</label>
-           <input type="radio" id="first-rate5" name="review[rating]" value="5" />
-           <label for="first-rate5" title="Amazing">5 stars</label>
-           </fieldset>
-         </div>
-
-        <div class="mb-3 mt-3">
-          <label for="comment" class="form-label" >Comment</label>
-          <textarea name="review[comment]" id="comment" cols="30" rows="5" class="form-control"required></textarea>
-        <div class="invalid-feedback">Please give feedback before submitting</div>
-        </div>
-        <button class="btn btn-outline-dark">Submit</button>
-      </form>
-      <% } %>
-      <hr />
-<div class="col-8 offset-2">
-  <hr />
- 
-  <% if(listing.reviews.length>0){%>
-  <div class="row">
-     <p><b>All Reviews</b></p>
-    <% for(review of listing.reviews) { %>
-      <div class="card col-5 ms-3 mb-3">
-        <div class="card-body">
-          <h5 class="card-title"><%= review.author ? review.author.username: "Anonymous" %></h5> <p class="card-text"><%= review.comment %></p>
-           <p class="starability-result card-text" data-rating="3">
-              <%= review.rating %>
-             </p>
-          <% if(currUser&& review.author && currUser._id.equals(review.author._id)) { %>
-          <form class="mb-3" method="POST" action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE">
-            <button class="btn btn-sm btn-dark">Delete</button>
-          </form>
-          <% } %>
-        </div>
-      </div>
-    <% } %>
-   </div>
-     <% } %>
-   <div>
-
-    <div class="col-12 col-md-6 offset-md-3 mb-3">
-       <h3>Where you will be</h3>
-         <div id="map" data-map-token="<%= process.env.MAP_TOKEN %>" data-coordinates='<%- JSON.stringify(listing.geometry.coordinates) %>' data-location="<%= listing.location %>"></div>
-    </div>
-</div>
-<!-- Flatpickr -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
-<div class="col-12 col-md-6 offset-md-3 mt-4 mb-4">
-  <div class="card shadow-sm">
-    <div class="card-body">
-      <h5 class="card-title mb-3">Book this listing</h5>
+<div class="show-wrap">
 
-      <% if (currUser) { %>
-        <% if (!currUser._id.equals(listing.Owner._id)) { %>
-          <!-- Date picker -->
-          <div class="mb-3">
-            <label class="form-label fw-semibold">Select dates</label>
-            <input type="text" id="date-range-picker" class="form-control" placeholder="Check-in  →  Check-out" readonly />
-            <input type="hidden" id="checkIn" />
-            <input type="hidden" id="checkOut" />
-          </div>
+  <!-- Hero image -->
+  <div class="show-hero">
+    <img src="<%= listing.image.url %>" alt="<%= listing.title %>">
+    <span class="show-hero__badge"><%= listing.category %></span>
+  </div>
 
-          <!-- Dynamic price summary -->
-          <div id="price-summary" class="mb-3 text-muted" style="display:none;">
-            <span id="nights-label"></span> ×
-            &#8377;<span id="price-per-night"><%= listing.price.toLocaleString("en-IN") %></span> / night
-            <br />
-            <strong>Total: &#8377;<span id="total-price"></span></strong>
-            <small class="d-block text-secondary">+ &#8377;<span id="gst-price"></span> (18% GST) = &#8377;<span id="grand-total"></span></small>
-          </div>
+  <!-- Two-column layout -->
+  <div class="show-layout">
 
-          <div id="booking-error" class="alert alert-danger d-none"></div>
+    <!-- LEFT: main content -->
+    <div class="show-main">
 
-          <button id="checkout-button" class="btn btn-primary w-100" disabled>
-            Select dates to book
-          </button>
-        <% } else { %>
-          <p class="text-muted mb-0">You own this listing.</p>
+      <h1 class="show-title"><%= listing.title %></h1>
+      <p class="show-meta">
+        <i class="fa-solid fa-location-dot"></i>
+        <%= listing.location %>, <%= listing.country %>
+      </p>
+      <p class="show-host">Hosted by <strong><%= listing.Owner.username %></strong></p>
+
+      <hr>
+
+      <p class="show-description"><%= listing.description %></p>
+
+      <hr>
+
+      <!-- Map -->
+      <h2 class="show-section-title">Where you'll be</h2>
+      <div id="map"
+        data-map-token="<%= process.env.MAP_TOKEN %>"
+        data-coordinates='<%- JSON.stringify(listing.geometry.coordinates) %>'
+        data-location="<%= listing.location %>">
+      </div>
+
+      <hr>
+
+      <!-- Reviews -->
+      <h2 class="show-section-title">
+        Reviews
+        <% if (listing.reviews.length > 0) { %>
+          <span class="show-review-badge"><%= listing.reviews.length %></span>
         <% } %>
+      </h2>
+
+      <% if (listing.reviews.length === 0) { %>
+        <p class="text-muted">No reviews yet. Be the first!</p>
       <% } else { %>
-        <a href="/login" class="btn btn-secondary w-100">Login to book</a>
+        <div class="review-grid">
+          <% for (let review of listing.reviews) { %>
+            <div class="review-card">
+              <div class="review-card__top">
+                <div class="review-card__avatar">
+                  <%= (review.author ? review.author.username : 'A')[0].toUpperCase() %>
+                </div>
+                <div>
+                  <p class="review-card__name"><%= review.author ? review.author.username : 'Anonymous' %></p>
+                  <div class="review-card__stars">
+                    <% for (let i = 1; i <= 5; i++) { %>
+                      <i class="fa-<%= i <= review.rating ? 'solid' : 'regular' %> fa-star"></i>
+                    <% } %>
+                  </div>
+                </div>
+              </div>
+              <p class="review-card__comment"><%= review.comment %></p>
+              <% if (currUser && review.author && currUser._id.equals(review.author._id)) { %>
+                <form method="POST" action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE">
+                  <button class="btn btn-sm btn-outline-danger">
+                    <i class="fa-solid fa-trash-can"></i> Delete
+                  </button>
+                </form>
+              <% } %>
+            </div>
+          <% } %>
+        </div>
       <% } %>
+
+      <!-- Write review -->
+      <% if (currUser && !currUser._id.equals(listing.Owner._id)) { %>
+        <div class="review-form-box">
+          <h3 class="show-section-title">Write a review</h3>
+          <form action="/listings/<%= listing.id %>/reviews" method="POST" novalidate class="needs-validation">
+            <div class="mb-3">
+              <label class="form-label">Rating</label>
+              <fieldset class="starability-slot">
+                <input type="radio" id="no-rate" class="input-no-rate" name="review[rating]" value="1" checked aria-label="No rating." />
+                <input type="radio" id="first-rate1" name="review[rating]" value="1" /><label for="first-rate1" title="Terrible">1 star</label>
+                <input type="radio" id="first-rate2" name="review[rating]" value="2" /><label for="first-rate2" title="Not good">2 stars</label>
+                <input type="radio" id="first-rate3" name="review[rating]" value="3" /><label for="first-rate3" title="Average">3 stars</label>
+                <input type="radio" id="first-rate4" name="review[rating]" value="4" /><label for="first-rate4" title="Very good">4 stars</label>
+                <input type="radio" id="first-rate5" name="review[rating]" value="5" /><label for="first-rate5" title="Amazing">5 stars</label>
+              </fieldset>
+            </div>
+            <div class="mb-3">
+              <label for="comment" class="form-label">Comment</label>
+              <textarea name="review[comment]" id="comment" rows="4" class="form-control" required placeholder="Share your experience…"></textarea>
+              <div class="invalid-feedback">Please add a comment.</div>
+            </div>
+            <button class="btn btn-outline-dark">Submit review</button>
+          </form>
+        </div>
+      <% } %>
+
     </div>
+
+    <!-- RIGHT: booking sidebar -->
+    <aside class="show-sidebar">
+      <div class="booking-card">
+
+        <!-- Price -->
+        <div class="booking-card__price">
+          <span class="booking-card__amount">&#8377;<%= listing.price.toLocaleString("en-IN") %></span>
+          <span class="booking-card__per"> / night</span>
+        </div>
+        <% const gst = Math.round(listing.price * 0.18); %>
+        <p class="booking-card__gst">+ &#8377;<%= gst.toLocaleString("en-IN") %> GST (18%)</p>
+
+        <hr>
+
+        <% if (currUser) { %>
+          <% if (!currUser._id.equals(listing.Owner._id)) { %>
+
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Select dates</label>
+              <input type="text" id="date-range-picker" class="form-control" placeholder="Check-in → Check-out" readonly />
+              <input type="hidden" id="checkIn" />
+              <input type="hidden" id="checkOut" />
+            </div>
+
+            <div id="price-summary" class="booking-card__summary" style="display:none;">
+              <div class="booking-card__summary-row">
+                <span id="nights-label"></span>
+                <span>&#8377;<span id="total-price"></span></span>
+              </div>
+              <div class="booking-card__summary-row text-muted">
+                <span>GST (18%)</span>
+                <span>&#8377;<span id="gst-price"></span></span>
+              </div>
+              <hr>
+              <div class="booking-card__summary-row booking-card__summary-row--total">
+                <span>Total</span>
+                <span>&#8377;<span id="grand-total"></span></span>
+              </div>
+            </div>
+
+            <div id="booking-error" class="alert alert-danger d-none"></div>
+
+            <button id="checkout-button" class="btn btn-primary w-100" disabled>
+              Select dates to book
+            </button>
+
+          <% } else { %>
+            <p class="text-muted mb-2 fw-semibold">You own this listing</p>
+            <a href="/listings/<%= listing._id %>/edit" class="btn btn-outline-dark w-100 mb-2">
+              <i class="fa-solid fa-pen"></i> Edit listing
+            </a>
+            <form method="POST" action="/listings/<%= listing._id %>?_method=DELETE">
+              <button class="btn btn-outline-danger w-100">
+                <i class="fa-solid fa-trash-can"></i> Delete listing
+              </button>
+            </form>
+          <% } %>
+        <% } else { %>
+          <a href="/login" class="btn btn-primary w-100">Log in to book</a>
+        <% } %>
+
+      </div>
+    </aside>
+
   </div>
 </div>
 
 <script src="https://js.stripe.com/v3/"></script>
 <script>
 (function () {
-  const pricePerNight =" <%= listing.price %>";
-  const listingId     = '<%= listing._id %>';
+  const pricePerNight  = <%= listing.price %>;
+  const listingId      = '<%= listing._id %>';
   const publishableKey = '<%= process.env.STRIPE_PUBLISHABLE_KEY %>';
-  const stripe = publishableKey ? Stripe(publishableKey) : null;
+  const stripe         = publishableKey ? Stripe(publishableKey) : null;
 
   const checkoutBtn  = document.getElementById('checkout-button');
   const priceSummary = document.getElementById('price-summary');
@@ -151,127 +189,75 @@
   const checkInEl    = document.getElementById('checkIn');
   const checkOutEl   = document.getElementById('checkOut');
 
-  if (!checkoutBtn) return; // not logged in or owner — nothing to do
+  if (!checkoutBtn) return;
 
-  // ── 1. Fetch booked ranges and initialise Flatpickr ───────────────────────
   fetch(`/payments/booked-dates/${listingId}`)
     .then(r => r.json())
     .then(bookings => {
-      // Build list of individual disabled dates from booked ranges
-      const disabledRanges = bookings
+      const disabled = bookings
         .filter(b => b.checkIn && b.checkOut)
-        .map(b => ({ from: b.checkIn.slice(0, 10), to: new Date(new Date(b.checkOut) - 86400000).toISOString().slice(0, 10) }));
-
-      flatpickr('#date-range-picker', {
-        mode: 'range',
-        minDate: 'today',
-        dateFormat: 'Y-m-d',
-        disable: disabledRanges,
-        onClose(selectedDates) {
-          if (selectedDates.length === 2) {
-            const ci = selectedDates[0].toISOString().slice(0, 10);
-            const co = selectedDates[1].toISOString().slice(0, 10);
-            checkInEl.value  = ci;
-            checkOutEl.value = co;
-            updatePriceSummary(selectedDates[0], selectedDates[1]);
-            setBookingError('');
-            checkoutBtn.disabled = false;
-            checkoutBtn.textContent = 'Book now';
-          } else {
-            checkoutBtn.disabled = true;
-            checkoutBtn.textContent = 'Select dates to book';
-            priceSummary.style.display = 'none';
-          }
-        }
-      });
+        .map(b => ({
+          from: b.checkIn.slice(0, 10),
+          to: new Date(new Date(b.checkOut) - 86400000).toISOString().slice(0, 10)
+        }));
+      initPicker(disabled);
     })
-    .catch(() => {
-      // fallback — init without disabled ranges
-      flatpickr('#date-range-picker', {
-        mode: 'range',
-        minDate: 'today',
-        dateFormat: 'Y-m-d',
-        onClose(selectedDates) {
-          if (selectedDates.length === 2) {
-            checkInEl.value  = selectedDates[0].toISOString().slice(0, 10);
-            checkOutEl.value = selectedDates[1].toISOString().slice(0, 10);
-            updatePriceSummary(selectedDates[0], selectedDates[1]);
-            checkoutBtn.disabled = false;
-            checkoutBtn.textContent = 'Book now';
-          }
-        }
-      });
-    });
+    .catch(() => initPicker([]));
 
-  // ── 2. Dynamic price display ───────────────────────────────────────────────
-  function updatePriceSummary(ci, co) {
+  function initPicker(disabled) {
+    flatpickr('#date-range-picker', {
+      mode: 'range', minDate: 'today', dateFormat: 'Y-m-d', disable: disabled,
+      onClose(dates) {
+        if (dates.length === 2) {
+          checkInEl.value  = dates[0].toISOString().slice(0, 10);
+          checkOutEl.value = dates[1].toISOString().slice(0, 10);
+          updateSummary(dates[0], dates[1]);
+          setError('');
+          checkoutBtn.disabled    = false;
+          checkoutBtn.textContent = 'Book now';
+        } else {
+          checkoutBtn.disabled       = true;
+          checkoutBtn.textContent    = 'Select dates to book';
+          priceSummary.style.display = 'none';
+        }
+      }
+    });
+  }
+
+  function updateSummary(ci, co) {
     const nights   = Math.round((co - ci) / 86400000);
     const subtotal = pricePerNight * nights;
     const gst      = Math.round(subtotal * 0.18);
     const grand    = subtotal + gst;
-    document.getElementById('nights-label').textContent = `${nights} night${nights > 1 ? 's' : ''}`;
+    document.getElementById('nights-label').textContent = `${nights} night${nights > 1 ? 's' : ''} × ₹${pricePerNight.toLocaleString('en-IN')}`;
     document.getElementById('total-price').textContent  = subtotal.toLocaleString('en-IN');
     document.getElementById('gst-price').textContent    = gst.toLocaleString('en-IN');
     document.getElementById('grand-total').textContent  = grand.toLocaleString('en-IN');
     priceSummary.style.display = 'block';
   }
 
-  function setBookingError(msg) {
-    if (msg) {
-      bookingError.textContent = msg;
-      bookingError.classList.remove('d-none');
-    } else {
-      bookingError.classList.add('d-none');
-    }
+  function setError(msg) {
+    bookingError.textContent = msg;
+    bookingError.classList.toggle('d-none', !msg);
   }
 
-  // ── 3. Checkout ────────────────────────────────────────────────────────────
   checkoutBtn.addEventListener('click', async () => {
-    const checkIn  = checkInEl.value;
-    const checkOut = checkOutEl.value;
-
-    if (!checkIn || !checkOut) {
-      setBookingError('Please select your check-in and check-out dates first.');
-      return;
-    }
-    if (!stripe) {
-      setBookingError('Payment system is unavailable. Please try again later.');
-      return;
-    }
-
+    const checkIn = checkInEl.value, checkOut = checkOutEl.value;
+    if (!checkIn || !checkOut) return setError('Please select your dates first.');
+    if (!stripe) return setError('Payment system unavailable. Try again later.');
     checkoutBtn.disabled = true;
     checkoutBtn.textContent = 'Redirecting…';
-    setBookingError('');
-
+    setError('');
     try {
-      const response = await fetch(`/payments/create-session/${listingId}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'same-origin',
-        body: JSON.stringify({ checkIn, checkOut }),
+      const res  = await fetch(`/payments/create-session/${listingId}`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin', body: JSON.stringify({ checkIn, checkOut }),
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        setBookingError(data.error || 'Unable to create checkout session.');
-        checkoutBtn.disabled = false;
-        checkoutBtn.textContent = 'Book now';
-        return;
-      }
-
+      const data = await res.json();
+      if (!res.ok) { setError(data.error || 'Unable to create checkout.'); checkoutBtn.disabled = false; checkoutBtn.textContent = 'Book now'; return; }
       const result = await stripe.redirectToCheckout({ sessionId: data.id });
-      if (result.error) {
-        setBookingError(result.error.message);
-        checkoutBtn.disabled = false;
-        checkoutBtn.textContent = 'Book now';
-      }
-    } catch (err) {
-      console.error('Checkout error:', err);
-      setBookingError('Payment checkout failed. Please try again.');
-      checkoutBtn.disabled = false;
-      checkoutBtn.textContent = 'Book now';
-    }
+      if (result.error) { setError(result.error.message); checkoutBtn.disabled = false; checkoutBtn.textContent = 'Book now'; }
+    } catch { setError('Payment failed. Please try again.'); checkoutBtn.disabled = false; checkoutBtn.textContent = 'Book now'; }
   });
 })();
 </script>

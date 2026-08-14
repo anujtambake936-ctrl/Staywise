@@ -1,75 +1,69 @@
 <% layout("/layouts/boilerplate")%>
 
-<div class="row mt-3">
-    <div class="col-8 offset-2">
-        <br /> <br />
-    <h3>Edit your Listing </h3>
+<div class="form-page">
+  <div class="form-card">
+    <h1 class="form-card__title">Edit listing</h1>
+    <p class="form-card__sub">Update details for <strong><%= listing.title %></strong></p>
+
     <% if (typeof error !== 'undefined') { %>
       <div class="alert alert-danger"><%= error %></div>
     <% } %>
 
-    <form method="POST" action="/listings/<%=listing._id%>?_method=PUT" class="needs-validation" novalidate
-        enctype="multipart/form-data">
-         <div class="mb-3">
-            <label for="title" class="form-label"> Title </label> 
-            <input class="form-control" type="text" name="listing[title]" value="<%= listing.title %>" required/>
-         </div>
-          
-    <div class="mb-3">
-    <label for="description" class="form-label">Description</label>
-    <textarea  class="form-control"  name="listing[description]"  id="description" required><%= listing.description %></textarea>
-        
-       
-       
-       
-    <div class="invalid-feedback">
-        Please enter a short description.
-    </div>
-</div>
-       <div class="mb-3">
-        Existing Image <br />
-        <img src="<%= originalImageUrl %>"/>
-        </div>   
+    <form method="POST" action="/listings/<%= listing._id %>?_method=PUT"
+      class="needs-validation" novalidate enctype="multipart/form-data">
 
+      <div class="mb-3">
+        <label class="form-label">Title</label>
+        <input class="form-control" type="text" name="listing[title]" value="<%= listing.title %>" required />
+        <div class="invalid-feedback">Please enter a title.</div>
+      </div>
 
-           <div class="mb-3">
-               <label for="image" class="form-label">Upload new Image</label>
-                <input class="form-control" type="file"  name="listing[image]"  />
-               
-           </div>        
-                   
-                   
-                   
-                  
-            
-        <div class="row">
-            <div class="mb-3 col-md-4">
-               <label for="price" class="form-label"> Price</label>
-               <input class="form-control" type="number" name="listing[price]" value="<%= listing.price %>" required/>
-            </div>
-            <div class="mb-3 col-md-4">
-               <label for="category" class="form-label">Category</label>
-               <select class="form-select" name="listing[category]" required>
-                  <option value="Apartment" <%= listing.category === 'Apartment' ? 'selected' : '' %>>Apartment</option>
-                  <option value="Villa" <%= listing.category === 'Villa' ? 'selected' : '' %>>Villa</option>
-                  <option value="Cottage" <%= listing.category === 'Cottage' ? 'selected' : '' %>>Cottage</option>
-                  <option value="Beach House" <%= listing.category === 'Beach House' ? 'selected' : '' %>>Beach House</option>
-                  <option value="Cabin" <%= listing.category === 'Cabin' ? 'selected' : '' %>>Cabin</option>
-               </select>
-            </div>
-            <div class="mb-3 col-md-4">
-               <label for="location" class="form-label">City / Location</label>
-               <input class="form-control" type="text" name="listing[location]" value="<%= listing.location %>" placeholder="enter city or address" required/>
-            </div>
+      <div class="mb-3">
+        <label class="form-label">Description</label>
+        <textarea class="form-control" name="listing[description]" rows="4" required><%= listing.description %></textarea>
+        <div class="invalid-feedback">Please add a description.</div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Current image</label>
+        <img src="<%= originalImageUrl %>" class="form-card__img-preview" alt="Current listing image" />
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Upload new image <span class="text-muted fw-normal">(optional)</span></label>
+        <input class="form-control" type="file" name="listing[image]" accept="image/*" />
+      </div>
+
+      <div class="form-grid">
+        <div class="mb-3">
+          <label class="form-label">Price per night (₹)</label>
+          <input class="form-control" type="number" name="listing[price]" value="<%= listing.price %>" min="0" required />
+          <div class="invalid-feedback">Please enter a valid price.</div>
         </div>
-   <div class="row">
-            <div class="mb-3 col-md-4">
-               <label for="country" class="form-label">Country</label>
-               <input class="form-control" type="text" name="listing[country]" value="<%= listing.country %>" placeholder="enter country" required/>
-            </div>
+        <div class="mb-3">
+          <label class="form-label">Category</label>
+          <select class="form-select" name="listing[category]" required>
+            <% ['Apartment','Villa','Cottage','Beach House','Cabin'].forEach(cat => { %>
+              <option value="<%= cat %>" <%= listing.category === cat ? 'selected' : '' %>><%= cat %></option>
+            <% }) %>
+          </select>
         </div>
-        
-        <button class="btn btn-dark add-btn mt-3 w-25">Edit</button>
-        <br /> <br />
+        <div class="mb-3">
+          <label class="form-label">City / Location</label>
+          <input class="form-control" type="text" name="listing[location]" value="<%= listing.location %>" required />
+          <div class="invalid-feedback">Please enter a location.</div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Country</label>
+          <input class="form-control" type="text" name="listing[country]" value="<%= listing.country %>" required />
+          <div class="invalid-feedback">Please enter a country.</div>
+        </div>
+      </div>
+
+      <div class="form-card__actions">
+        <a href="/listings/<%= listing._id %>" class="btn btn-outline-secondary">Cancel</a>
+        <button type="submit" class="btn btn-dark add-btn">Save changes</button>
+      </div>
     </form>
-    </div> </div>
+  </div>
+</div>

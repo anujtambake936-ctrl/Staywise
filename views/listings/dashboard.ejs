@@ -1,22 +1,62 @@
 <% layout('/layouts/boilerplate') %>
-<div class="container mt-4">
-  <h1>Host Dashboard</h1>
-  <p>Welcome, <%= currUser.fullName %>. Here are your listings.</p>
+
+<div class="page-wrap">
+  <div class="page-header">
+    <div>
+      <h1 class="page-header__title">Host Dashboard</h1>
+      <p class="page-header__sub">Welcome, <strong><%= currUser.fullName %></strong></p>
+    </div>
+    <a href="/listings/new" class="btn btn-dark">
+      <i class="fa-solid fa-plus"></i> New Listing
+    </a>
+  </div>
+
   <% if (listingsWithCounts.length === 0) { %>
-    <div class="alert alert-info">You have not added any listings yet.</div>
+    <div class="empty-state">
+      <i class="fa-solid fa-house-circle-xmark"></i>
+      <h2>No listings yet</h2>
+      <p>Add your first property to start welcoming guests.</p>
+      <a href="/listings/new" class="btn btn-dark">Add a listing</a>
+    </div>
   <% } else { %>
-    <div class="row row-cols-1 row-cols-md-2 g-4">
-      <% listingsWithCounts.forEach(item => { const listing = item.listing; %>
-        <div class="col">
-          <div class="card h-100">
-            <img src="<%= listing.image.url %>" class="card-img-top" alt="<%= listing.title %>">
-            <div class="card-body">
-              <h5 class="card-title"><%= listing.title %></h5>
-              <p class="card-text"><%= listing.location %>, <%= listing.country %></p>
-              <p class="card-text"><strong>Price:</strong> ₹<%= listing.price %></p>
-              <p class="card-text"><strong>Bookings:</strong> <%= item.bookingCount %></p>
-              <a href="/listings/<%= listing._id %>" class="btn btn-primary">View</a>
-              <a href="/listings/<%= listing._id %>/bookings" class="btn btn-outline-secondary ms-2">View bookings</a>
+    <div class="stat-row">
+      <div class="stat-card">
+        <i class="fa-solid fa-house"></i>
+        <div>
+          <p class="stat-card__val"><%= listingsWithCounts.length %></p>
+          <p class="stat-card__lbl">Listings</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <i class="fa-solid fa-calendar-check"></i>
+        <div>
+          <p class="stat-card__val"><%= listingsWithCounts.reduce((s,i) => s + i.bookingCount, 0) %></p>
+          <p class="stat-card__lbl">Total Bookings</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="dash-grid">
+      <% listingsWithCounts.forEach(({ listing, bookingCount }) => { %>
+        <div class="dash-card">
+          <div class="dash-card__img">
+            <img src="<%= listing.image.url %>" alt="<%= listing.title %>">
+            <span class="dash-card__badge"><%= listing.category %></span>
+          </div>
+          <div class="dash-card__body">
+            <h3 class="dash-card__title"><%= listing.title %></h3>
+            <p class="dash-card__meta">
+              <i class="fa-solid fa-location-dot"></i>
+              <%= listing.location %>, <%= listing.country %>
+            </p>
+            <div class="dash-card__stats">
+              <span>₹<%= listing.price.toLocaleString('en-IN') %> / night</span>
+              <span><i class="fa-solid fa-calendar-check"></i> <%= bookingCount %> booking<%= bookingCount !== 1 ? 's' : '' %></span>
+            </div>
+            <div class="dash-card__actions">
+              <a href="/listings/<%= listing._id %>" class="btn btn-sm btn-outline-secondary">View</a>
+              <a href="/listings/<%= listing._id %>/edit" class="btn btn-sm btn-outline-secondary">Edit</a>
+              <a href="/listings/<%= listing._id %>/bookings" class="btn btn-sm btn-dark">Bookings</a>
             </div>
           </div>
         </div>

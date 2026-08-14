@@ -1,26 +1,51 @@
 <% layout('/layouts/boilerplate') %>
-<div class="container mt-5">
-  <div class="alert alert-success">
-    <h4>Payment successful!</h4>
-    <p>Your booking is confirmed.</p>
-    <% if (payment.checkIn && payment.checkOut) { %>
-      <p>
-        <strong>Check-in:</strong> <%= new Date(payment.checkIn).toLocaleDateString('en-IN', { dateStyle: 'long' }) %>
-        &nbsp;→&nbsp;
-        <strong>Check-out:</strong> <%= new Date(payment.checkOut).toLocaleDateString('en-IN', { dateStyle: 'long' }) %>
-      </p>
-      <% if (payment.nights) { %>
-        <% const subtotal = Math.round(payment.amount / 100 / 1.18); %>
-        <% const gst = payment.amount / 100 - subtotal; %>
-        <p><strong>Duration:</strong> <%= payment.nights %> night<%= payment.nights > 1 ? 's' : '' %></p>
-        <p>
-          ₹<%= subtotal.toLocaleString('en-IN') %> + ₹<%= Math.round(gst).toLocaleString('en-IN') %> (18% GST)
-          = <strong>₹<%= (payment.amount / 100).toLocaleString('en-IN') %></strong>
-        </p>
-      <% } %>
+
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="success-icon"><i class="fa-solid fa-circle-check"></i></div>
+    <h1 class="auth-card__title">Booking confirmed!</h1>
+    <p class="auth-card__sub">Your payment was successful.</p>
+
+    <% if (payment.listing) { %>
+      <p class="success-listing"><%= payment.listing.title %></p>
     <% } %>
-    <p><strong>Amount paid:</strong> ₹<%= (payment.amount / 100).toLocaleString('en-IN') %></p>
-    <a href="/payments/history" class="btn btn-primary">View my bookings</a>
-    <a href="/listings" class="btn btn-outline-secondary ms-2">Back to listings</a>
+
+    <% if (payment.checkIn && payment.checkOut) { %>
+      <div class="success-dates">
+        <div class="success-date">
+          <p class="success-date__label">Check-in</p>
+          <p class="success-date__val"><%= new Date(payment.checkIn).toLocaleDateString('en-IN', { dateStyle: 'medium' }) %></p>
+        </div>
+        <i class="fa-solid fa-arrow-right success-arrow"></i>
+        <div class="success-date">
+          <p class="success-date__label">Check-out</p>
+          <p class="success-date__val"><%= new Date(payment.checkOut).toLocaleDateString('en-IN', { dateStyle: 'medium' }) %></p>
+        </div>
+      </div>
+    <% } %>
+
+    <% if (payment.nights) { %>
+      <% const subtotal = Math.round(payment.amount / 100 / 1.18); %>
+      <% const gst = Math.round(payment.amount / 100 - subtotal); %>
+      <div class="success-breakdown">
+        <div class="success-breakdown__row">
+          <span><%= payment.nights %> night<%= payment.nights > 1 ? 's' : '' %></span>
+          <span>₹<%= subtotal.toLocaleString('en-IN') %></span>
+        </div>
+        <div class="success-breakdown__row text-muted">
+          <span>GST (18%)</span>
+          <span>₹<%= gst.toLocaleString('en-IN') %></span>
+        </div>
+        <div class="success-breakdown__row success-breakdown__row--total">
+          <span>Total paid</span>
+          <span>₹<%= (payment.amount / 100).toLocaleString('en-IN') %></span>
+        </div>
+      </div>
+    <% } %>
+
+    <div class="auth-card__actions">
+      <a href="/payments/history" class="btn btn-dark w-100">View my bookings</a>
+      <a href="/listings" class="btn btn-outline-secondary w-100">Explore more</a>
+    </div>
   </div>
 </div>

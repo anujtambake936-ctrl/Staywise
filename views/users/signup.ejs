@@ -1,105 +1,78 @@
 <% layout("/layouts/boilerplate") %>
 
-<div class="row mt-3">
-    <h1 class="col-6 offset-3">Signup on Staywise</h1>
-    <div class="col-6 offset-3">
-        <form action="/signup" method="POST" class="needs-validation" novalidate>
-            <div class="mb-3">
-                <label for="username" class="form-label">Username</label>
-                <input 
-                    name="username" 
-                    id="username" 
-                    type="text" 
-                    class="form-control" 
-                    required
-                />
-                <div class="valid-feedback">Looks good!</div>
-            </div>
+<div class="auth-page">
+  <div class="auth-card auth-card--wide">
+    <h1 class="auth-card__title">Create account</h1>
+    <p class="auth-card__sub">Join Staywise as a traveller or host</p>
 
-            <div class="mb-3">
-                <label for="fullName" class="form-label">Full Name</label>
-                <input 
-                    name="fullName" 
-                    id="fullName" 
-                    type="text" 
-                    class="form-control" 
-                    required
-                />
-                <div class="invalid-feedback">Please enter your full name.</div>
-            </div>
+    <form action="/signup" method="POST" class="needs-validation" novalidate>
 
-            <div class="mb-3">
-                <label for="phone" class="form-label">Phone</label>
-                <input 
-                    name="phone" 
-                    id="phone" 
-                    type="text" 
-                    class="form-control" 
-                    required
-                />
-                <div class="invalid-feedback">Please enter your phone number.</div>
-            </div>
+      <div class="form-grid">
+        <div class="mb-3">
+          <label for="username" class="form-label">Username</label>
+          <input name="username" id="username" type="text" class="form-control" required autocomplete="username" />
+          <div class="valid-feedback">Looks good!</div>
+        </div>
+        <div class="mb-3">
+          <label for="fullName" class="form-label">Full Name</label>
+          <input name="fullName" id="fullName" type="text" class="form-control" required />
+          <div class="invalid-feedback">Please enter your full name.</div>
+        </div>
+        <div class="mb-3">
+          <label for="email" class="form-label">Email</label>
+          <input name="email" id="email" type="email" class="form-control" required autocomplete="email" />
+          <div class="invalid-feedback">Please enter a valid email.</div>
+        </div>
+        <div class="mb-3">
+          <label for="phone" class="form-label">Phone</label>
+          <input name="phone" id="phone" type="text" class="form-control" required />
+          <div class="invalid-feedback">Please enter your phone number.</div>
+        </div>
+        <div class="mb-3 form-grid__full">
+          <label for="address" class="form-label">Address <span class="text-muted fw-normal">(optional)</span></label>
+          <input name="address" id="address" type="text" class="form-control" />
+        </div>
+        <div class="mb-3 form-grid__full">
+          <label for="password" class="form-label">Password</label>
+          <input name="password" id="password" type="password" class="form-control" required autocomplete="new-password" />
+          <div class="invalid-feedback">Please enter a password.</div>
+        </div>
+      </div>
 
-            <div class="mb-3">
-                <label for="address" class="form-label">Address</label>
-                <input 
-                    name="address" 
-                    id="address" 
-                    type="text" 
-                    class="form-control" 
-                />
-            </div>
+      <!-- Role -->
+      <div class="mb-3">
+        <label for="role" class="form-label">I am signing up as</label>
+        <select name="role" id="role" class="form-select" required>
+          <option value="user">Traveller</option>
+          <option value="host">Host</option>
+        </select>
+      </div>
 
-            <div class="mb-3">
-                <label for="role" class="form-label">I am signing up as</label>
-                <select name="role" id="role" class="form-select" required>
-                  <option value="user">User</option>
-                  <option value="host">Host</option>
-                </select>
-            </div>
+      <!-- Host fields -->
+      <div id="hostFields" style="display:none;">
+        <div class="form-grid">
+          <div class="mb-3">
+            <label for="companyName" class="form-label">Company Name <span class="text-muted fw-normal">(optional)</span></label>
+            <input name="hostInfo[companyName]" id="companyName" type="text" class="form-control" />
+          </div>
+          <div class="mb-3">
+            <label for="gstNumber" class="form-label">GST Number <span class="text-muted fw-normal">(optional)</span></label>
+            <input name="hostInfo[gstNumber]" id="gstNumber" type="text" class="form-control" />
+          </div>
+          <div class="mb-3 form-grid__full">
+            <label for="bio" class="form-label">Short Bio</label>
+            <textarea name="hostInfo[bio]" id="bio" class="form-control" rows="3" placeholder="Tell guests about yourself…"></textarea>
+          </div>
+        </div>
+      </div>
 
-            <div id="hostFields" style="display:none;">
-              <div class="mb-3">
-                <label for="companyName" class="form-label">Company Name</label>
-                <input name="hostInfo[companyName]" id="companyName" type="text" class="form-control" />
-              </div>
-              <div class="mb-3">
-                <label for="bio" class="form-label">Short Bio</label>
-                <textarea name="hostInfo[bio]" id="bio" class="form-control" rows="3"></textarea>
-              </div>
-              <div class="mb-3">
-                <label for="gstNumber" class="form-label">GST Number</label>
-                <input name="hostInfo[gstNumber]" id="gstNumber" type="text" class="form-control" />
-              </div>
-            </div>
+      <button class="btn btn-dark w-100 mt-1">Create account</button>
+    </form>
 
-            <div class="mb-3">
-                <label for="email" class="form-label">Email</label>
-                <input 
-                    name="email" 
-                    id="email" 
-                    type="email" 
-                    class="form-control" 
-                    required
-                />
-                <div class="invalid-feedback">Please enter a valid email.</div>
-            </div>
-
-            <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
-                <input 
-                    name="password" 
-                    id="password" 
-                    type="password" 
-                    class="form-control" 
-                    required
-                />
-                <div class="invalid-feedback">Please enter a password.</div>
-            </div>
-
-            <button class="btn btn-success">Signup</button>
-        </form>
-    </div>
+    <p class="auth-card__footer">
+      Already have an account? <a href="/login">Log in</a>
+    </p>
+  </div>
 </div>
 
 <script>
