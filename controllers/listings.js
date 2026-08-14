@@ -8,7 +8,7 @@ function escapeRegex(text) {
 }
 
 module.exports.index = async (req, res) => {
-  const { search = '', category = 'All', minPrice = '', maxPrice = '', trending = '' } = req.query;
+  const { search = '', category = 'All', minPrice = '', maxPrice = '', trending = '', sort = '' } = req.query;
   const query = {};
 
   if (search) {
@@ -44,11 +44,14 @@ module.exports.index = async (req, res) => {
       { $sort: { score: -1 } },
     ];
     const allListings = await Listing.aggregate(pipeline);
-    return res.render('listings/index.ejs', { allListings, search: '', category, minPrice, maxPrice, trending: '1' });
+    return res.render('listings/index.ejs', { allListings, search: '', category, minPrice, maxPrice, trending: '1', sort });
   }
 
-  const allListings = await Listing.find(query);
-  res.render('listings/index.ejs', { allListings, search, category, minPrice, maxPrice, trending: '' });
+  // Apply sorting at DB level — reliable regardless of result type
+  const sortOption = sort === 'price_asc' ? { price: 1 } : sort === 'price_desc' ? { price: -1 } : {};
+  const allListings = await Listing.find(query).sort(sortOption);
+
+  res.render('listings/index.ejs', { allListings, search, category, minPrice, maxPrice, trending: '', sort });
 };
 
 module.exports.renderNewForm = (req, res) => res.render('listings/new.ejs');

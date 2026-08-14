@@ -1,73 +1,154 @@
 <% layout("/layouts/boilerplate")%>
 
-      
+<% const selectedCategory = typeof category !== 'undefined' ? category : 'All'; %>
+<% const selectedTrending  = typeof trending  !== 'undefined' ? trending  : ''; %>
+<% const selectedMinPrice  = typeof minPrice  !== 'undefined' ? minPrice  : ''; %>
+<% const selectedMaxPrice  = typeof maxPrice  !== 'undefined' ? maxPrice  : ''; %>
+<% const selectedSort      = typeof sort      !== 'undefined' ? sort      : ''; %>
 
-      <% const selectedCategory = typeof category !== 'undefined' ? category : 'All'; %>
-      <% const selectedTrending = typeof trending !== 'undefined' ? trending : ''; %>
-      <% const selectedMinPrice = typeof minPrice !== 'undefined' ? minPrice : '' %>
-      <% const selectedMaxPrice = typeof maxPrice !== 'undefined' ? maxPrice : '' %>
-      <div class="search-panel">
-        <form action="/listings" method="GET" class="search-panel__row">
-          <div class="search-panel__fields">
-            <input type="text" name="search" placeholder="Search by title, location or country" value="<%= typeof search !== 'undefined' ? search : '' %>">
-            <select name="category">
-              <option value="All" <%= selectedCategory === 'All' ? 'selected' : '' %>>All categories</option>
-              <option value="Apartment" <%= selectedCategory === 'Apartment' ? 'selected' : '' %>>Apartment</option>
-              <option value="Villa" <%= selectedCategory === 'Villa' ? 'selected' : '' %>>Villa</option>
-              <option value="Cottage" <%= selectedCategory === 'Cottage' ? 'selected' : '' %>>Cottage</option>
-              <option value="Beach House" <%= selectedCategory === 'Beach House' ? 'selected' : '' %>>Beach House</option>
-              <option value="Cabin" <%= selectedCategory === 'Cabin' ? 'selected' : '' %>>Cabin</option>
-            </select>
-            <input type="number" name="minPrice" placeholder="Min price" value="<%= selectedMinPrice %>">
-            <input type="number" name="maxPrice" placeholder="Max price" value="<%= selectedMaxPrice %>">
-          </div>
-          <div class="search-panel__actions">
-            <button type="submit" class="btn btn-primary">Filter</button>
-            <div class="tax-toggle d-flex align-items-center" style="margin-left:0.6rem;">
-              <input type="checkbox" id="gstToggle" aria-label="Show prices with GST">
-              <label for="gstToggle" style="margin:0 0 0 .4rem; font-size:0.95rem;">With GST</label>
-            </div>
-            <% if (search || selectedCategory !== 'All' || selectedMinPrice || selectedMaxPrice) { %>
-              <a href="/listings" class="btn btn-secondary">Clear</a>
+<div class="search-panel">
+  <form action="/listings" method="GET" id="searchForm">
+    <div class="search-panel__row">
+      <div class="search-panel__fields">
+        <div class="search-panel__search-wrap">
+          <i class="fa-solid fa-magnifying-glass search-panel__search-icon"></i>
+          <input type="text" name="search" class="search-panel__search-input"
+            placeholder="Search by title, location or country"
+            value="<%= typeof search !== 'undefined' ? search : '' %>">
+        </div>
+        <select name="category" class="search-panel__select">
+          <option value="All"         <%= selectedCategory === 'All'         ? 'selected' : '' %>>All categories</option>
+          <option value="Apartment"   <%= selectedCategory === 'Apartment'   ? 'selected' : '' %>>Apartment</option>
+          <option value="Villa"       <%= selectedCategory === 'Villa'       ? 'selected' : '' %>>Villa</option>
+          <option value="Cottage"     <%= selectedCategory === 'Cottage'     ? 'selected' : '' %>>Cottage</option>
+          <option value="Beach House" <%= selectedCategory === 'Beach House' ? 'selected' : '' %>>Beach House</option>
+          <option value="Cabin"       <%= selectedCategory === 'Cabin'       ? 'selected' : '' %>>Cabin</option>
+        </select>
+      </div>
+
+      <div class="search-panel__actions">
+        <label class="tax-toggle">
+          <input type="checkbox" id="gstToggle">
+          <span>With GST</span>
+        </label>
+
+        <!-- Filter dropdown -->
+        <div class="filter-dropdown">
+          <button type="button" class="btn btn-dark search-panel__submit" id="filterBtn">
+            <i class="fa-solid fa-sliders"></i> Filter
+            <% if (selectedSort || selectedMinPrice || selectedMaxPrice) { %>
+              <span class="filter-active-dot"></span>
             <% } %>
+          </button>
+          <div class="filter-dropdown__menu" id="filterMenu">
+
+            <div class="filter-dropdown__section">
+              <p class="filter-dropdown__section-title">Sort by price</p>
+              <button type="button" class="filter-dropdown__item <%= selectedSort === 'price_asc'  ? 'active' : '' %>" data-action="sort" data-value="price_asc">
+                <i class="fa-solid fa-arrow-up-wide-short"></i> Low to High
+              </button>
+              <button type="button" class="filter-dropdown__item <%= selectedSort === 'price_desc' ? 'active' : '' %>" data-action="sort" data-value="price_desc">
+                <i class="fa-solid fa-arrow-down-wide-short"></i> High to Low
+              </button>
+            </div>
+
+            <hr class="filter-dropdown__divider">
+
+            <div class="filter-dropdown__section">
+              <p class="filter-dropdown__section-title">Price range</p>
+              <button type="button" class="filter-dropdown__item" data-action="price" data-min="" data-max="2000">
+                <i class="fa-solid fa-indian-rupee-sign"></i> Under ₹2,000
+              </button>
+              <button type="button" class="filter-dropdown__item" data-action="price" data-min="2000" data-max="5000">
+                <i class="fa-solid fa-indian-rupee-sign"></i> ₹2,000 – ₹5,000
+              </button>
+              <button type="button" class="filter-dropdown__item" data-action="price" data-min="5000" data-max="10000">
+                <i class="fa-solid fa-indian-rupee-sign"></i> ₹5,000 – ₹10,000
+              </button>
+              <button type="button" class="filter-dropdown__item" data-action="price" data-min="10000" data-max="">
+                <i class="fa-solid fa-indian-rupee-sign"></i> Above ₹10,000
+              </button>
+            </div>
+
+            <hr class="filter-dropdown__divider">
+
+            <div class="filter-dropdown__section">
+              <p class="filter-dropdown__section-title">Quick filters</p>
+              <button type="button" class="filter-dropdown__item" data-action="search" data-value="pool">
+                <i class="fa-solid fa-person-swimming"></i> Amazing Pools
+              </button>
+              <button type="button" class="filter-dropdown__item" data-action="search" data-value="room">
+                <i class="fa-solid fa-bed"></i> Rooms
+              </button>
+              <button type="button" class="filter-dropdown__item" data-action="search" data-value="farm">
+                <i class="fa-solid fa-building-wheat"></i> Farms
+              </button>
+            </div>
+
+            <hr class="filter-dropdown__divider">
+
+            <div class="filter-dropdown__section">
+              <p class="filter-dropdown__section-title">By category</p>
+              <button type="button" class="filter-dropdown__item <%= selectedCategory === 'Apartment'   ? 'active' : '' %>" data-action="category" data-value="Apartment">
+                <i class="fa-solid fa-building"></i> Apartment
+              </button>
+              <button type="button" class="filter-dropdown__item <%= selectedCategory === 'Villa'       ? 'active' : '' %>" data-action="category" data-value="Villa">
+                <i class="fa-solid fa-house"></i> Villa
+              </button>
+              <button type="button" class="filter-dropdown__item <%= selectedCategory === 'Cottage'     ? 'active' : '' %>" data-action="category" data-value="Cottage">
+                <i class="fa-solid fa-house-chimney"></i> Cottage
+              </button>
+              <button type="button" class="filter-dropdown__item <%= selectedCategory === 'Beach House' ? 'active' : '' %>" data-action="category" data-value="Beach House">
+                <i class="fa-solid fa-umbrella-beach"></i> Beach House
+              </button>
+              <button type="button" class="filter-dropdown__item <%= selectedCategory === 'Cabin'       ? 'active' : '' %>" data-action="category" data-value="Cabin">
+                <i class="fa-solid fa-tents"></i> Cabin
+              </button>
+            </div>
+
           </div>
-        </form>
+        </div>
+
+        <button type="submit" class="btn btn-outline-secondary search-panel__clear">Search</button>
+
+        <% if (search || selectedCategory !== 'All' || selectedMinPrice || selectedMaxPrice || selectedSort) { %>
+          <a href="/listings" class="btn btn-outline-secondary search-panel__clear">Clear</a>
+        <% } %>
       </div>
-      <div class="filters-row">
-        <a class="chip-link <%= (selectedTrending === '1') ? 'active' : '' %>" href="/listings?trending=1">
-          <i class="fa-solid fa-fire"></i>
-          <p>Trending</p>
-        </a>
-        <a class="chip-link <%= (search && search.toLowerCase().includes('room')) ? 'active' : '' %>" href="/listings?search=room">
-          <i class="fa-solid fa-bed"></i>
-          <p>Rooms</p>
-        </a>
-        <a class="chip-link <%= (search && search.toLowerCase().includes('city')) ? 'active' : '' %>" href="/listings?search=city">
-          <i class="fa-solid fa-mountain-city"></i>
-          <p>Iconic cities</p>
-        </a>
-        <a class="chip-link <%= (search && search.toLowerCase().includes('cast')) ? 'active' : '' %>" href="/listings?search=castle">
-          <i class="fa-brands fa-fort-awesome"></i>
-          <p>Castles</p>
-        </a>
-        <a class="chip-link <%= (search && search.toLowerCase().includes('pool')) ? 'active' : '' %>" href="/listings?search=pool">
-          <i class="fa-solid fa-person-swimming"></i>
-          <p>Amazing Pools</p>
-        </a>
-        <a class="chip-link <%= (selectedCategory && selectedCategory === 'Cabin') ? 'active' : '' %>" href="/listings?category=Cabin">
-          <i class="fa-solid fa-tents"></i>
-          <p>Camping</p>
-        </a>
-        <a class="chip-link <%= (search && search.toLowerCase().includes('farm')) ? 'active' : '' %>" href="/listings?search=farm">
-          <i class="fa-solid fa-building-wheat"></i>
-          <p>Farms</p>
-        </a>
-        <a class="chip-link <%= (search && search.toLowerCase().includes('arct')) ? 'active' : '' %>" href="/listings?search=arctic">
-          <i class="fa-regular fa-snowflake"></i>
-          <p>Arctic</p>
-        </a>
-      </div>
-  <div class="row listing-row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    </div>
+  </form>
+</div>
+
+<!-- Quick chips -->
+<div class="filters-row">
+  <a class="chip-link <%= selectedTrending === '1' ? 'active' : '' %>" href="/listings?trending=1">
+    <i class="fa-solid fa-fire"></i><p>Trending</p>
+  </a>
+  <a class="chip-link <%= (search && search.toLowerCase().includes('room')) ? 'active' : '' %>" href="/listings?search=room">
+    <i class="fa-solid fa-bed"></i><p>Rooms</p>
+  </a>
+  <a class="chip-link <%= (search && search.toLowerCase().includes('city')) ? 'active' : '' %>" href="/listings?search=city">
+    <i class="fa-solid fa-mountain-city"></i><p>Iconic cities</p>
+  </a>
+  <a class="chip-link <%= (search && search.toLowerCase().includes('castle')) ? 'active' : '' %>" href="/listings?search=castle">
+    <i class="fa-brands fa-fort-awesome"></i><p>Castles</p>
+  </a>
+  <a class="chip-link <%= (search && search.toLowerCase().includes('pool')) ? 'active' : '' %>" href="/listings?search=pool">
+    <i class="fa-solid fa-person-swimming"></i><p>Amazing Pools</p>
+  </a>
+  <a class="chip-link <%= selectedCategory === 'Cabin' ? 'active' : '' %>" href="/listings?category=Cabin">
+    <i class="fa-solid fa-tents"></i><p>Camping</p>
+  </a>
+  <a class="chip-link <%= (search && search.toLowerCase().includes('farm')) ? 'active' : '' %>" href="/listings?search=farm">
+    <i class="fa-solid fa-building-wheat"></i><p>Farms</p>
+  </a>
+  <a class="chip-link <%= (search && search.toLowerCase().includes('arctic')) ? 'active' : '' %>" href="/listings?search=arctic">
+    <i class="fa-regular fa-snowflake"></i><p>Arctic</p>
+  </a>
+</div>
+
+<!-- Listings grid -->
+<div class="row listing-row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
   <% for(let listing of allListings) { %>
     <div class="col">
       <a href="/listings/<%= listing._id %>" class="listing-link">
@@ -85,3 +166,55 @@
     </div>
   <% } %>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const filterBtn  = document.getElementById('filterBtn');
+  const filterMenu = document.getElementById('filterMenu');
+
+  // toggle open/close
+  filterBtn.addEventListener('click', function (e) {
+    e.stopPropagation();
+    filterMenu.classList.toggle('open');
+  });
+
+  document.addEventListener('click', function () {
+    filterMenu.classList.remove('open');
+  });
+
+  filterMenu.addEventListener('click', function (e) {
+    e.stopPropagation();
+  });
+
+  // handle all filter buttons via data-action
+  filterMenu.querySelectorAll('[data-action]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      const action = btn.dataset.action;
+      const url    = new URL('/listings', window.location.origin);
+
+      if (action === 'sort') {
+        // keep current search + category, add sort
+        const s = document.querySelector('[name="search"]').value.trim();
+        const c = document.querySelector('[name="category"]').value;
+        if (s) url.searchParams.set('search', s);
+        if (c && c !== 'All') url.searchParams.set('category', c);
+        url.searchParams.set('sort', btn.dataset.value);
+
+      } else if (action === 'price') {
+        const min = btn.dataset.min;
+        const max = btn.dataset.max;
+        if (min) url.searchParams.set('minPrice', min);
+        if (max) url.searchParams.set('maxPrice', max);
+
+      } else if (action === 'search') {
+        url.searchParams.set('search', btn.dataset.value);
+
+      } else if (action === 'category') {
+        url.searchParams.set('category', btn.dataset.value);
+      }
+
+      window.location.href = url.toString();
+    });
+  });
+});
+</script>
